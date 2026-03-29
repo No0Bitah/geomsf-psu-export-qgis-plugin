@@ -1,0 +1,47 @@
+# This file contains metadata for your plugin.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=Geomsf by psu package Builder
+qgisMinimumVersion=3.0
+description=Automates the preparation of QField survey packages from the 2023 Geo-enabled Master Sample Frame (GeoMSF).
+version=0.1
+author=Jomari M. Daison
+email=jomari.daison@gmail.com
+
+about=Automates the preparation of QField survey packages from the 2023 Geo-enabled Master Sample Frame (GeoMSF). Loads a selected SSU CSV file, converts it to a spatial layer, exports per-PSU GeoPackages, builds QGIS project files with styled sample and tracklog layers, and packages everything for offline use with QField. Streamlining field deployment for PSA household-based survey operations.
+
+tracker=https://github.com/No0Bitah/geomsf-psu-export-qgis-plugin/issues
+repository=https://github.com/No0Bitah/geomsf-psu-export-qgis-plugin
+# End of mandatory metadata
+
+# Recommended items:
+
+hasProcessingProvider=no
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=python
+
+homepage=https://no0bitah.github.io/
+category=Plugins
+icon=icon.png
+# experimental flag
+experimental=False
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
+# Since QGIS 3.8, a comma separated list of plugins to be installed
+# (or upgraded) can be specified.
+# Check the documentation for more information.
+# plugin_dependencies=
+
+Category of the plugin: Raster, Vector, Database or Web
+# category=
+
+# If the plugin can run on QGIS Server.
+server=False
+
