@@ -45,7 +45,7 @@ This is applicable for LFS and needs some minor updates on files names for CES a
 
 1. Clone or download this repository:
    ```bash
-   git clone https://github.com/<your-org>/geomsfpkg-qgis-plugin.git
+   git clone https://github.com/No0Bitah/geomsf-psu-export-qgis-plugin.git
    ```
 
 2. In your QGIS:
