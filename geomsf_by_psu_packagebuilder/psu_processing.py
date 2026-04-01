@@ -199,150 +199,158 @@ def export_psu(layer, unique_psu):
 
 def create_files(unique_psu):
     for psu in unique_psu:
-        project = QgsProject.instance()
-        project.clear()
+        try:
+            project = QgsProject.instance()
+            project.clear()
 
-        project.setCrs(QgsCoordinateReferenceSystem("EPSG:3857"))
-        
-        TRACKLOG_FILE  = (
-            BASE_DIR + r"\\tracklog.gpkg"
-        )
+            project.setCrs(QgsCoordinateReferenceSystem("EPSG:3857"))
+            
+            TRACKLOG_FILE  = (
+                BASE_DIR + r"\\tracklog.gpkg"
+            )
 
-        SAMPLE_FILE_1 = (
-            BASE_DIR + "\\" +
-            f"{ACTIVITY_NAME}_{DOMAIN_NAME}_Selected_ssu_{REPLICATE}_psu_{psu}.gpkg"
-        )
-
-
-        SAMPLE_FILE_2 = (
-            BASE_DIR + "\\" + f"{ACTIVITY_NAME}_{DOMAIN_NAME}_Additional SSU or Replacement PSU.gpkg"
-        )
-
-        # Styles
-        TRACKLOG_FILE_STYLE = os.path.join(BASE_DIR, r"Map Legends\QML-tracklog.qml")
-        SAMPLE_FILE_1_STYLE  = os.path.join(BASE_DIR, r"Map Legends\2023 GeoMS Georeferencing Feature Application for Sampling Units- SSU v2.0.qml")
-        SAMPLE_FILE_2_STYLE  = os.path.join(BASE_DIR, r"Map Legends\2023 GeoMS Georeferencing Feature Application for Sampling Units-Addtl Replacement SSU v2.0.qml")
+            SAMPLE_FILE_1 = (
+                BASE_DIR + "\\" +
+                f"{ACTIVITY_NAME}_{DOMAIN_NAME}_Selected_ssu_{REPLICATE}_psu_{psu}.gpkg"
+            )
 
 
-        if not os.path.exists(BASE_DIR):
-            os.makedirs(BASE_DIR)
+            SAMPLE_FILE_2 = (
+                BASE_DIR + "\\" + f"{ACTIVITY_NAME}_{DOMAIN_NAME}_Additional SSU or Replacement PSU.gpkg"
+            )
 
-        project_file = ( 
-            BASE_DIR + "\\" +
-            f"{ACTIVITY_NAME}_{DOMAIN_NAME}_Selected_ssu_{REPLICATE}_psu_{psu}.qgz"
-        )
+            # Styles
+            TRACKLOG_FILE_STYLE = os.path.join(BASE_DIR, r"Map Legends\QML-tracklog.qml")
+            SAMPLE_FILE_1_STYLE  = os.path.join(BASE_DIR, r"Map Legends\2023 GeoMS Georeferencing Feature Application for Sampling Units- SSU v2.0.qml")
+            SAMPLE_FILE_2_STYLE  = os.path.join(BASE_DIR, r"Map Legends\2023 GeoMS Georeferencing Feature Application for Sampling Units-Addtl Replacement SSU v2.0.qml")
 
-        # Groups to create
-        groups = ["Tracklog", "samples", "Basemap"]
 
-        # --------------------------
-        #  CREATE GROUPS
-        # --------------------------
+            if not os.path.exists(BASE_DIR):
+                os.makedirs(BASE_DIR)
 
-        root = project.layerTreeRoot()
+            project_file = ( 
+                BASE_DIR + "\\" +
+                f"{ACTIVITY_NAME}_{DOMAIN_NAME}_Selected_ssu_{REPLICATE}_psu_{psu}.qgz"
+            )
 
-        group_objects = {}
-        for g in groups:
-            group_objects[g] = root.addGroup(g)
+            # Groups to create
+            groups = ["Tracklog", "samples", "Basemap"]
 
-        # --------------------------
-        # ADD LAYERS TO TRACKLOG
-        # --------------------------
+            # --------------------------
+            #  CREATE GROUPS
+            # --------------------------
 
-        tracklog_file = TRACKLOG_FILE  # path to your tracklog.gpkg
-        tracklog_layer = QgsVectorLayer(tracklog_file, "tracklog", "ogr")
+            root = project.layerTreeRoot()
 
-        if not tracklog_layer.isValid():
-            print("Tracklog layer failed to load!")
-        else:
-            # APPLY STYLE
-            if os.path.exists(TRACKLOG_FILE_STYLE):
-                tracklog_layer.loadNamedStyle(TRACKLOG_FILE_STYLE)
-                tracklog_layer.triggerRepaint()
+            group_objects = {}
+            for g in groups:
+                group_objects[g] = root.addGroup(g)
 
-            project.addMapLayer(tracklog_layer, False)
-            group_objects["Tracklog"].addLayer(tracklog_layer)
+            # --------------------------
+            # ADD LAYERS TO TRACKLOG
+            # --------------------------
 
-        # --------------------------
-        # ADD LAYERS TO SAMPLES
-        # --------------------------
+            tracklog_file = TRACKLOG_FILE  # path to your tracklog.gpkg
+            tracklog_layer = QgsVectorLayer(tracklog_file, "tracklog", "ogr")
 
-        samples_files = [
-            (SAMPLE_FILE_1, SAMPLE_FILE_1_STYLE),
-            (SAMPLE_FILE_2, SAMPLE_FILE_2_STYLE)
-        ]
+            if not tracklog_layer.isValid():
+                print("Tracklog layer failed to load!")
+            else:
+                # APPLY STYLE
+                if os.path.exists(TRACKLOG_FILE_STYLE):
+                    tracklog_layer.loadNamedStyle(TRACKLOG_FILE_STYLE)
+                    tracklog_layer.triggerRepaint()
 
-        for sf, style in samples_files:
-            # Use QgsVectorLayer to get subLayers safely
-            temp_layer = QgsVectorLayer(sf, "temp", "ogr")
-            if not temp_layer.isValid():
-                print(f"Failed to open {sf}")
-                continue
-            # # Load all layers inside the GPKG
-            for l in temp_layer.dataProvider().subLayers():
-                layer_name = l.split('!!::!!')[1]  # extract layer name from subLayers
-                layer_path = f"{sf}|layername={layer_name}"
-                layer = QgsVectorLayer(layer_path, layer_name, "ogr")
-                if layer.isValid():
-                    # ADD STYLE
-                    if os.path.exists(style):
-                        layer.loadNamedStyle(style)
-                        layer.triggerRepaint()
+                project.addMapLayer(tracklog_layer, False)
+                group_objects["Tracklog"].addLayer(tracklog_layer)
 
-                    project.addMapLayer(layer, False)
-                    group_objects["samples"].addLayer(layer)
-                else:
-                    print(f"Layer {layer_name} failed to load from {sf}")
+            # --------------------------
+            # ADD LAYERS TO SAMPLES
+            # --------------------------
 
-        # --------------------------
-        #  ADD GOOGLE SATELLITE TO BASEMAP
-        # --------------------------
+            samples_files = [
+                (SAMPLE_FILE_1, SAMPLE_FILE_1_STYLE),
+                (SAMPLE_FILE_2, SAMPLE_FILE_2_STYLE)
+            ]
 
-        # Make sure QMS plugin is installed
-        # Layer URI format for QuickMapServices Google Satellite:
-        basemap_name = "Google Satellite"
-        # basemap_source = (
-        #     "type=xyz&zmin=0&zmax=20&url=https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-        # )
-        basemap_source = (
-            "type=xyz&zmin=0&zmax=20&url=https://mt1.google.com/vt/lyrs%3Ds%26x%3D{x}%26y%3D{y}%26z%3D{z}"
-        )
-        basemap_layer = QgsRasterLayer(basemap_source, basemap_name, "wms")
+            for sf, style in samples_files:
+                # Use QgsVectorLayer to get subLayers safely
+                temp_layer = QgsVectorLayer(sf, "temp", "ogr")
+                if not temp_layer.isValid():
+                    print(f"Failed to open {sf}")
+                    continue
+                # # Load all layers inside the GPKG
+                for l in temp_layer.dataProvider().subLayers():
+                    layer_name = l.split('!!::!!')[1]  # extract layer name from subLayers
+                    layer_path = f"{sf}|layername={layer_name}"
+                    layer = QgsVectorLayer(layer_path, layer_name, "ogr")
+                    if layer.isValid():
+                        # ADD STYLE
+                        if os.path.exists(style):
+                            layer.loadNamedStyle(style)
+                            layer.triggerRepaint()
 
-        if basemap_layer.isValid():
-            # Add to project without default root
-            QgsProject.instance().addMapLayer(basemap_layer, False)
-            # Add to Basemap group
-            group_objects["Basemap"].addLayer(basemap_layer)
-            print("Google Satellite added successfully")
+                        project.addMapLayer(layer, False)
+                        group_objects["samples"].addLayer(layer)
+                    else:
+                        print(f"Layer {layer_name} failed to load from {sf}")
 
-            # ---- WAIT UNTIL LAYER IS READY ----
-            timeout = 8  # seconds
-            start_time = time.time()
+            # --------------------------
+            #  ADD GOOGLE SATELLITE TO BASEMAP
+            # --------------------------
 
-            while not basemap_layer.isValid():
+            # Make sure QMS plugin is installed
+            # Layer URI format for QuickMapServices Google Satellite:
+            basemap_name = "Google Satellite"
+            # basemap_source = (
+            #     "type=xyz&zmin=0&zmax=20&url=https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+            # )
+            basemap_source = (
+                "type=xyz&zmin=0&zmax=20&url=https://mt1.google.com/vt/lyrs%3Ds%26x%3D{x}%26y%3D{y}%26z%3D{z}"
+            )
+            basemap_layer = QgsRasterLayer(basemap_source, basemap_name, "wms")
+
+            if basemap_layer.isValid():
+                # Add to project without default root
+                QgsProject.instance().addMapLayer(basemap_layer, False)
+                # Add to Basemap group
+                group_objects["Basemap"].addLayer(basemap_layer)
+                print("Google Satellite added successfully")
+
+                # ---- WAIT UNTIL LAYER IS READY ----
+                timeout = 8  # seconds
+                start_time = time.time()
+
+                while not basemap_layer.isValid():
+                    QgsApplication.processEvents()
+                    if time.time() - start_time > timeout:
+                        print("Basemap load timeout.")
+                        break
+
+                # small buffer delay to allow tile initialization
                 QgsApplication.processEvents()
-                if time.time() - start_time > timeout:
-                    print("Basemap load timeout.")
-                    break
+                time.sleep(2)
 
-            # small buffer delay to allow tile initialization
-            QgsApplication.processEvents()
+            else:
+                print("Basemap failed to load!")
+
+            # --------------------------
+            # SAVE PROJECT
+            # --------------------------
+
+            project.write(project_file)
+            print("Project saved to:", project_file)
+
             time.sleep(2)
+            export_qfield(project_file,psu)
 
-        else:
-            print("Basemap failed to load!")
-
-        # --------------------------
-        # SAVE PROJECT
-        # --------------------------
-
-        project.write(project_file)
-        print("Project saved to:", project_file)
-
-        time.sleep(2)
-        export_qfield(project_file,psu)
-
+        except Exception as e:
+            QMessageBox.warning(
+                None,
+                f"Warning — PSU {psu}",
+                f"⚠️ Failed to create project for PSU {psu}:\n\n{str(e)}"
+            )
+            continue  
 
 def export_qfield(project_path,psu):
     export_folder = (BASE_DIR + "\\" + "Package for QField" + "\\" + MONTH + "\\" + f"{DOMAIN_NAME}_{REPLICATE}_PSU{psu}")
@@ -411,8 +419,19 @@ def main():
 
     my_array = np.array(selected_psu)
 
-    export_psu(layer, my_array)
-    create_files(my_array)
-    print("--------------------------------")
-    print("|    Done with all processing!    |")
-    print("--------------------------------")
+    try:
+        export_psu(layer, my_array)
+        create_files(my_array)
+        print("All files are DONE!")
+        QMessageBox.information(
+            None,
+            "Processing Complete",
+            f"✅ All {len(my_array)} PSU(s) processed successfully!\n\nOutput saved to:\n{BASE_DIR}"
+        )
+    except Exception as e:
+        QMessageBox.critical(
+            None,
+            "Error Encountered",
+            f"❌ Something went wrong:\n\n{str(e)}"
+        )
+        raise
