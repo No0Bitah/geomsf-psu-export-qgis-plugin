@@ -8,7 +8,7 @@ A QGIS plugin for the **Philippine Statistics Authority (PSA)** that automates t
 
 Field survey deployment for PSA household-based surveys requires generating per-PSU GeoPackages, setting up styled QGIS projects, and packaging everything for offline use on tablet devices via **QField**. This plugin automates that entire workflow — reducing manual steps, minimizing human error, and getting field teams ready faster.
 
-This is applicable for LFS and needs some minor updates on files names for CES as of this date of upload due to some files not yet updated for CES.
+This is applicable for LFS and HSDV but needs some minor updates on files names for CES as of this date of upload due to some files not yet updated for CES.
 
 ---
 

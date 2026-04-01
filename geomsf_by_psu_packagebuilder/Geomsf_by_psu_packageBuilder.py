@@ -182,7 +182,9 @@ class Geomsf_by_psu_packageBuilder:
 
     def run(self):
         """Run method that performs all the real work"""
+        import importlib
+        from . import psu_processing
 
-        from .psu_processing import main
+        importlib.reload(psu_processing)
 
-        main()
+        psu_processing.main()

@@ -73,11 +73,16 @@ base_name = os.path.splitext(os.path.basename(csv_path))[0]
 LAYER_NAME = base_name
 PSU_FIELD = "PSU_number"
 BASE_DIR = os.path.dirname(csv_path)
-print(BASE_DIR)
-ACTIVITY_NAME = base_name.split('_')[0]
-DOMAIN_NAME = base_name.split('_')[1]
-MONTH = base_name.split('_')[0]
-REPLICATE = base_name.split('_')[4]
+
+parts = base_name.split('_')
+header = parts[0].split(' ')  # e.g. ['2026', 'April', 'LFS'] or ['2026', 'HSDV']
+
+ACTIVITY_NAME = parts[0]   # '2026 April LFS' or '2026 HSDV'
+DOMAIN_NAME   = parts[1]   # 'City of Iligan' or 'Lanao del Norte'
+REPLICATE     = parts[4]   # 'R13(RG2)' or 'R47(RG2)'
+
+# MONTH: use the full header block for folder naming (works for both)
+MONTH = parts[0]           # '2026 April LFS' or '2026 HSDV' — used in export_qfield folder path
 
 
 def add_layer(file_path):
