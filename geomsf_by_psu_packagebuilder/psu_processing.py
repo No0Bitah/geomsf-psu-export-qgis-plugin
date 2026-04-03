@@ -222,8 +222,17 @@ def create_files(unique_psu):
             # Styles
             TRACKLOG_FILE_STYLE = os.path.join(BASE_DIR, r"Map Legends\QML-tracklog.qml")
             SAMPLE_FILE_1_STYLE  = os.path.join(BASE_DIR, r"Map Legends\2023 GeoMS Georeferencing Feature Application for Sampling Units- SSU v2.0.qml")
+            if not os.path.exists(SAMPLE_FILE_1_STYLE):
+                SAMPLE_FILE_1_STYLE = os.path.join(
+                    BASE_DIR,
+                    r"Map Legends\2023 GeoMS Georeferencing Feature Application for Sampling Units- SSU.qml"
+                )
             SAMPLE_FILE_2_STYLE  = os.path.join(BASE_DIR, r"Map Legends\2023 GeoMS Georeferencing Feature Application for Sampling Units-Addtl Replacement SSU v2.0.qml")
-
+            if not os.path.exists(SAMPLE_FILE_2_STYLE):
+                SAMPLE_FILE_2_STYLE = os.path.join(
+                    BASE_DIR,
+                    r"Map Legends\2023 GeoMS Georeferencing Feature Application for Sampling Units-Addtl Replacement SSU.qml"
+                )
 
             if not os.path.exists(BASE_DIR):
                 os.makedirs(BASE_DIR)
